@@ -1,0 +1,206 @@
+j main
+j interrupt
+j exception
+main:
+addi $t5 $zero 0x0008
+addi $sp $zero 0x03ff
+addi $t0 $zero 0x0040
+lui $v0 0x4000
+addi $t1 $zero 0x0003
+sw $t1 0x0020($v0)
+sw $zero 0x0008($v0)
+addi $t1 $zero 0x03e8
+sub $t1 $zero $t1
+sw $t1 0x0000($v0)
+addi $t2 $zero 0xffff
+sw $t2 0x0004($v0)
+jr $t0
+addi $t2 $zero 0x0003
+sw $t2 0x0008($v0)
+add $s6 $zero $zero
+addi $s3 $zero 0x0002
+wait:
+lw $s0 0x0020($v0)
+addi $s4 $zero 0x0008
+and $s1 $s4 $s0
+bne $s1 $s4 wait
+bne $s6 $zero second
+first:
+lw  $a0 0x001c($v0)
+addi $s6 $s6 0x0001
+j out
+second:
+lw  $a1 0x001c($v0)
+addi $s6 $s6 0x0001
+out:
+add $s1 $zero $zero
+slt $s1 $s6 $s3
+bne $s1 $zero wait
+add $s6 $zero $zero
+j cal
+cal:
+bne $a0 $a1 L
+add $s5 $a0 $zero
+j send
+L:
+add $s1 $a0 $zero
+add $s2 $a1 $zero
+L1:
+add $s0 $zero $zero
+slt $s0 $s1 $s2
+beq $s0 $zero L2
+add $s4 $s2 $zero
+add $s2 $s1 $zero
+add $s1 $s4 $zero
+L2:
+sub $s1 $s1 $s2
+bne $s1 $s2 L1
+add $s5 $s1 $zero
+send:
+sw $s5 0x000c($v0)
+sw $s5 0x0018($v0)
+end:
+add $s5 $s5 $zero
+j wait
+interrupt:
+addi $t0 $zero 0x0001
+sw $t0 0x0008($v0)
+addi $t0 $zero 0x0018
+sub $sp $sp $t0
+sw $s0 0x0018($sp)
+sw $s1 0x0014($sp)
+sw $s2 0x0010($sp)
+sw $s3 0x000c($sp)
+sw $s4 0x0008($sp)
+sw $ra 0x0004($sp)
+jal hex
+lw $ra 0x0004($sp)
+lw $s4 0x0008($sp)
+lw $s3 0x000c($sp)
+lw $s2 0x0010($sp)
+lw $s1 0x0014($sp)
+lw $s0 0x0018($sp)
+addi $sp $sp 0x0018
+sw $v1 0x0014($v0)
+addi $t1 $zero 0x0130
+addi $t0 $zero 0x0003
+sw $t0 0x0008($v0)
+add $t1 $zero $zero
+addi $k0 $k0 0xfffc
+jr $k0
+hex:
+sll $t0 $a0 0x1c
+srl $t0 $t0 0x1c
+srl $t1 $a0 0x04
+sll $t2 $a1 0x1c
+srl $t2 $t2 0x1c
+srl $t3 $a1 0x04
+addi $t6 $zero 0x0008
+beq $t6 $t5 digi1000
+srl $t6 $t6 0x01
+beq $t6 $t5 digi0100
+srl $t6 $t6 0x01
+beq $t6 $t5 digi0010
+srl $t6 $t6 0x01
+digi0001:
+sll $v1 $t6 0x08
+sll $t5 $t5 0x03
+add $t7 $zero $t2
+j digi7
+digi1000:
+sll $v1 $t6 0x08
+srl $t5 $t5 0x01
+add $t7 $zero $t1
+j digi7
+digi0100:
+sll $v1 $t6 0x08
+srl $t5 $t5 0x01
+add $t7 $zero $t0
+j digi7
+digi0010:
+sll $v1 $t6 0x08
+srl $t5 $t5 0x01
+add $t7 $zero $t3
+j digi7
+digi7:
+beq $t7 $zero C0
+addi $t7 $t7 0xffff
+beq $t7 $zero C1
+addi $t7 $t7 0xffff
+beq $t7 $zero C2
+addi $t7 $t7 0xffff
+beq $t7 $zero C3
+addi $t7 $t7 0xffff
+beq $t7 $zero C4
+addi $t7 $t7 0xffff
+beq $t7 $zero C5
+addi $t7 $t7 0xffff
+beq $t7 $zero C6
+addi $t7 $t7 0xffff
+beq $t7 $zero C7
+addi $t7 $t7 0xffff
+beq $t7 $zero C8
+addi $t7 $t7 0xffff
+beq $t7 $zero C9
+addi $t7 $t7 0xffff
+beq $t7 $zero CA
+addi $t7 $t7 0xffff
+beq $t7 $zero CB
+addi $t7 $t7 0xffff
+beq $t7 $zero CC
+addi $t7 $t7 0xffff
+beq $t7 $zero CD
+addi $t7 $t7 0xffff
+beq $t7 $zero CE
+addi $t7 $t7 0xffff
+beq $t7 $zero CF
+C0:
+addi $v1 $v1 0x00c0
+jr $ra
+C1:
+addi $v1 $v1 0x00f9
+jr $ra
+C2:
+addi $v1 $v1 0x00a4
+jr $ra
+C3:
+addi $v1 $v1 0x00b0
+jr $ra
+C4:
+addi $v1 $v1 0x0099
+jr $ra
+C5:
+addi $v1 $v1 0x0092
+jr $ra
+C6:
+addi $v1 $v1 0x0082
+jr $ra
+C7:
+addi $v1 $v1 0x00f8
+jr $ra
+C8:
+addi $v1 $v1 0x0080
+jr $ra
+C9:
+addi $v1 $v1 0x0090
+jr $ra
+CA:
+addi $v1 $v1 0x0088
+jr $ra
+CB:
+addi $v1 $v1 0x0083
+jr $ra
+CC:
+addi $v1 $v1 0x00c6
+jr $ra
+CD:
+addi $v1 $v1 0x00a1
+jr $ra
+CE:
+addi $v1 $v1 0x0086
+jr $ra
+CF:
+addi $v1 $v1 0x008e
+jr $ra
+exception:
+jr $k0
